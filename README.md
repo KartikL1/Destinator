@@ -66,9 +66,4 @@ The primary objectives of this project are to:
 
 ---
 
-## 🧪 How to Run the Project
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/tourist-recommendation-system.git
-   cd tourist-recommendation-system
