@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Place Recommendation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background: white;
+            padding: 40px;
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+        #btn {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+        }
+        #btn2 {
+            background-color:rgb(55, 255, 0);
+            color: white;
+            cursor: pointer;
+            width: 100%;
+        }
+        #link{
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            padding: 5px;
+            width: 100%;
+            font-size:1rem;
+            border-radius: 5px;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            width: 300px;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .card img {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+        }
+        .card h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+        .card p {
+            font-size: 14px;
+            color: #666;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .card a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Find Your Best Travel Destination</h2>
+    <form action="/recommend" method="post">
+        <label for="budget">Enter Your Budget (INR):</label>
+        <input style="width:max-content" type="number" id="budget" name="budget" required>
+        <br>
+
+        <label for="place_type">Select Type of Place:</label>
+<select id="place_type" name="place_type" required>
+    <option value="" disabled selected>Select a Place Type</option>
+    {% for t in types %}
+        <option value="{{ t }}">{{ t }}</option>
+    {% endfor %}
+</select>
+<br>
+
+<label for="state">Select Your State:</label>
+<select id="state" name="state" required>
+    <option value="" disabled selected>Select a State</option>
+</select>
+
+
+        <button id="btn2" type="submit">Find Places</button>
+<button id="btn" onclick="window.location.href='{{ url_for('tourist_places') }}'">Go To Tourist Places</button>
+<button id="btn" onclick="window.location.href='{{ url_for('index') }}'">See What You Like</button>
+<button id="btn" onclick="window.location.href='/'">Home</button>
+    </form>
+
+
+    {% if recommendations %}
+        <h3>Recommended Places</h3>
+        <div class="card-container">
+            {% for place in recommendations %}
+            <div class="card">
+                <img src="{{ place['Image Link'] }}" alt="Place Image">
+                <h3>{{ place['Place Name'] }}</h3>
+                <p><strong>City:</strong> {{ place['city'] }}</p>
+                <p><strong>State:</strong> {{ place['state'] }}</p>
+                <p><strong>Package:</strong> ₹{{ place['Package'] }}</p>
+                <p><strong>Rating:</strong> ⭐{{ place['Rating'] }}</p>
+                <p><strong>Best Time:</strong> {{ place['Best time'] }}</p>
+                <a href="{{ place['Visit Link'] }}" target="_blank">More Info</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <script>
+        document.getElementById('place_type').addEventListener('change', function () {
+            const selectedType = this.value;
+            const stateSelect = document.getElementById('state');
+            
+            // Clear current state options
+            stateSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+    
+            fetch(`/get_states_for_type?type=${encodeURIComponent(selectedType)}`)
+                .then(response => response.json())
+                .then(states => {
+                    stateSelect.innerHTML = '<option value="" disabled selected>Select a State</option>';
+                    states.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state;
+                        option.textContent = state;
+                        stateSelect.appendChild(option);
+                    });
+                });
+        });
+    </script>
+    
+</body>
+</html>
